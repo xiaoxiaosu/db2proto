@@ -1,0 +1,49 @@
+syntax = "proto3"
+
+package test
+
+service test {
+rpc Addtest(AddtestRequest) returns (AddtestReply)
+rpc Updatetest(AddtestRequest) returns (UpdatetestReply)
+}
+message AddtestRequest {
+
+int32 id = 1
+
+string name = 2
+
+string job = 3
+
+string car = 4
+
+string other = 5
+
+string userinfoUri = 6
+
+}
+
+message UpdatetestRequest {
+
+int32 id = 1
+
+string name = 2
+
+string job = 3
+
+string car = 4
+
+string other = 5
+
+string userinfoUri = 6
+
+}
+
+message AddtestReply {
+int32 code = 1
+string msg = 2
+}
+
+message UpdatetestReply {
+int32 code = 1
+string msg = 2
+}
