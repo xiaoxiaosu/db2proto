@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -13,28 +14,26 @@ const structTpl =
 package {{.TableName}}
 
 service {{.TableName}} {
-rpc Add{{$.TableName}}(Add{{$.TableName}}Request) returns (Add{{$.TableName}}Reply)
-rpc Update{{$.TableName}}(Add{{$.TableName}}Request) returns (Update{{$.TableName}}Reply)
+rpc Add{{camel $.TableName}}(Add{{camel $.TableName}}Request) returns (Add{{camel $.TableName}}Reply)
+rpc Update{{camel $.TableName}}(Add{{camel $.TableName}}Request) returns (Update{{camel $.TableName}}Reply)
 }
 
-message Add{{$.TableName}}Request {
-{{range $index, $value := .Columns}}
-{{.Type}} {{.Name}} = {{inc $index}}
+message Add{{camel $.TableName}}Request {
+{{range $index, $value := .Columns}}{{.Type}} {{.Name}} = {{inc $index}}
 {{end}}
 }
 
-message Update{{$.TableName}}Request {
-{{range $index, $value := .Columns}}
-{{.Type}} {{.Name}} = {{inc $index}}
+message Update{{camel $.TableName}}Request {
+{{range $index, $value := .Columns}}{{.Type}} {{.Name}} = {{inc $index}}
 {{end}}
 }
 
-message Add{{$.TableName}}Reply {
+message Add{{camel $.TableName}}Reply {
 int32 code = 1
 string msg = 2
 }
 
-message Update{{$.TableName}}Reply {
+message Update{{camel $.TableName}}Reply {
 int32 code = 1
 string msg = 2
 }
@@ -76,6 +75,11 @@ func (t *StructTemplate) Generate(tableName string, tplColumns []*StructColumn) 
 	tpl,  _ := template.Must(template.New("db2pb"), nil).Funcs(template.FuncMap{
 		"inc": func(i int) int{
 			return i+1
+		},
+		"camel": func(s string) string {
+			s = strings.Replace(s, "_", " ", -1)
+			s = strings.Title(s)
+			return strings.Replace(s, " ", "", -1)
 		},
 	}).Parse(t.structTpl)
 	tplDB := StructTemplateDb{
